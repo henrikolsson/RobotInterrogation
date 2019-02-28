@@ -11,6 +11,12 @@ export async function queryJson<TResponse>(url: string) {
     return json as TResponse;
 }
 
+export async function queryList(url: string) {
+    const response = await fetch(url, { credentials: 'same-origin' });
+    const json = await response.json();
+    return json as string[];
+}
+
 export function connectSignalR(url: string) {
     const transportType = inCompatibilityMode()
         ? signalR.HttpTransportType.LongPolling

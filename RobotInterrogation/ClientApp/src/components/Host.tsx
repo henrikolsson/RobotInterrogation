@@ -1,19 +1,21 @@
 import * as React from 'react';
-import { Redirect } from 'react-router';
+import { Redirect, RouteComponentProps } from 'react-router';
 import { queryString } from '../Connectivity';
 
 interface IState {
     interviewID?: string;
 }
 
-export class Host extends React.PureComponent<{}, IState> {
-    constructor(props: {}) {
+type Props = RouteComponentProps<{ language: string }>
+
+export class Host extends React.PureComponent<Props, IState> {
+    constructor(props: Props) {
         super(props);
         this.state = {};
     }
 
     public componentWillMount() {
-        this.query();
+        this.query(this.props.match.params.language);
     }
 
     public render() {
@@ -26,8 +28,8 @@ export class Host extends React.PureComponent<{}, IState> {
         </div>;
     }
 
-    private async query() {
-        const id = await queryString('/api/Data/GetNextSessionID')
+    private async query(language: string) {
+        const id = await queryString(`/api/Data/GetNextSessionID/${language}`);
         this.setState({
             interviewID: id,
         });

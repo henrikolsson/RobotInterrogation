@@ -8,7 +8,7 @@ import { Interview } from './components/Interview';
 export const routes = (
     <Switch>
         <Route path="/" exact={true} component={Home} />
-        <Route path="/host" component={Host} />
+        <Route path="/host/:language" component={Host} />
         <Route path="/about" component={About} />
         <Route path="/interview/:id" component={Interview} />
     </Switch>

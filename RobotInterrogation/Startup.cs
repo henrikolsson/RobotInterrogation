@@ -30,7 +30,7 @@ namespace RobotInterrogation
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.Configure<GameConfiguration>(options => Configuration.GetSection("GameConfiguration").Bind(options));
+            services.Configure<GameConfigurations>(options => Configuration.GetSection("GameConfiguration").Bind(options));
             services.Configure<IDGeneration>(options => Configuration.GetSection("IDGeneration").Bind(options));
 
             services.AddScoped<InterviewService>();

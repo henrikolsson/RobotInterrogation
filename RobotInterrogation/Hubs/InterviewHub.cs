@@ -41,7 +41,7 @@ namespace RobotInterrogation.Hubs
 
     public class InterviewHub : Hub<IInterviewMessages>
     {
-        public InterviewHub(InterviewService service, IOptions<GameConfiguration> configuration)
+        public InterviewHub(InterviewService service, IOptions<GameConfigurations> configuration)
         {
             Service = service;
             Configuration = configuration.Value;
@@ -51,7 +51,7 @@ namespace RobotInterrogation.Hubs
         private string SessionID => UserSessions[Context.ConnectionId];
 
         private InterviewService Service { get; }
-        private GameConfiguration Configuration { get; }
+        private GameConfigurations Configuration { get; }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
@@ -191,7 +191,7 @@ namespace RobotInterrogation.Hubs
 
         private async Task SetPacket(Interview interview, int index)
         {
-            interview.Packet = Service.GetPacket(index);
+            interview.Packet = Service.GetPacket(interview, index);
 
             await Clients.Group(SessionID)
                 .SetPacket(interview.Packet.Description);
@@ -261,7 +261,7 @@ namespace RobotInterrogation.Hubs
 
         private async Task ShowPacketChoice(Interview interview)
         {
-            var packets = Service.GetAllPackets();
+            var packets = Service.GetAllPackets(interview);
 
             await Clients
                 .Client(interview.InterviewerConnectionID)

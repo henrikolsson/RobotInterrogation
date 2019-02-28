@@ -15,25 +15,25 @@ namespace RobotInterrogation.Services
 
         private static Random IdGenerator = new Random();
 
-        private GameConfiguration Configuration { get; }
+        private GameConfigurations Configurations { get; }
         private IDGeneration IDs { get; }
         private ILogger Logger { get; }
 
         public const string LogName = "Interviews";
 
-        public InterviewService(IOptions<GameConfiguration> configuration, IOptions<IDGeneration> idWords, ILoggerFactory logger)
+        public InterviewService(IOptions<GameConfigurations> configuration, IOptions<IDGeneration> idWords, ILoggerFactory logger)
         {
-            Configuration = configuration.Value;
+            Configurations = configuration.Value;
             IDs = idWords.Value;
             Logger = logger.CreateLogger(LogName);
         }
 
-        public string GetNewInterviewID()
+        public string GetNewInterviewID(string language)
         {
             lock (IdGenerator)
             {
                 string id = GenerateID();
-                Interviews[id.ToLower()] = new Interview();
+                Interviews[id.ToLower()] = new Interview(language);
                 return id;
             }
         }
@@ -144,21 +144,26 @@ namespace RobotInterrogation.Services
             }
         }
 
-        public void AllocatePenalties(Interview interview)
+        private GameConfiguration ConfigurationForInterview(Interview interview)
         {
-            AllocateRandomValues(Configuration.Penalties, interview.Penalties, 3);
+            return Configurations.Data[interview.Language];
         }
 
-        public string[] GetAllPackets()
+        public void AllocatePenalties(Interview interview)
         {
-            return Configuration.Packets
+            AllocateRandomValues(ConfigurationForInterview(interview).Penalties, interview.Penalties, 3);
+        }
+
+        public string[] GetAllPackets(Interview interview)
+        {
+            return ConfigurationForInterview(interview).Packets
                 .Select(p => p.Description)
                 .ToArray();
         }
 
-        public Packet GetPacket(int index)
+        public Packet GetPacket(Interview interview, int index)
         {
-            return Configuration.Packets[index];
+            return ConfigurationForInterview(interview).Packets[index];
         }
 
         public void AllocateRoles(Interview interview)
@@ -174,7 +179,7 @@ namespace RobotInterrogation.Services
 
         public void AllocateSuspectNotes(Interview interview)
         {
-            AllocateRandomValues(Configuration.SuspectNotes, interview.SuspectNotes, 2);
+            AllocateRandomValues(ConfigurationForInterview(interview).SuspectNotes, interview.SuspectNotes, 2);
         }
 
         public InterviewOutcome GuessSuspectRole(Interview interview, bool guessIsRobot)
@@ -220,7 +225,7 @@ namespace RobotInterrogation.Services
         {
             var oldInterview = GetInterviewWithStatus(interviewID, InterviewStatus.Finished);
 
-            var newInterview = new Interview();
+            var newInterview = new Interview(oldInterview.Language);
             Interviews[interviewID.ToLower()] = newInterview;
 
             newInterview.Status = InterviewStatus.SelectingPositions;

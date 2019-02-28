@@ -6,6 +6,13 @@ namespace RobotInterrogation.Models
 {
     public class Interview
     {
+        public String Language { get; }
+
+        public Interview(string language)
+        {
+            Language = language;
+        }
+
         public InterviewStatus Status { get; set; } = InterviewStatus.WaitingForConnections;
         public InterviewOutcome? Outcome { get; set; }
 
