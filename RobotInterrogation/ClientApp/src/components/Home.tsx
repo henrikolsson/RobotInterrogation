@@ -48,6 +48,7 @@ export class Home extends React.PureComponent<{}, IState> {
 
     private handleChange = (e: React.FormEvent<HTMLSelectElement>) => {
         this.setState({
+            ...this.state,
             selectedLanguage: e.currentTarget.value
         });
     };
